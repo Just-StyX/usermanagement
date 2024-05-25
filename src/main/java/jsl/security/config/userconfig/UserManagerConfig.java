@@ -1,5 +1,6 @@
 package jsl.security.config.userconfig;
 
+import jsl.security.filter.AuthenticationLoggingFilter;
 import jsl.security.filter.RequestValidationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,13 +20,15 @@ public class UserManagerConfig {
 
     @Bean
     SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
-                                            RequestValidationFilter requestValidationFilter) throws Exception {
+                                            RequestValidationFilter requestValidationFilter,
+                                            AuthenticationLoggingFilter authenticationLoggingFilter) throws Exception {
         return httpSecurity
 //                .formLogin(c -> c.defaultSuccessUrl("/person", true))
                 .addFilterBefore(requestValidationFilter, BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(
                     c -> c.anyRequest().permitAll()
-                ).csrf(
+                ).addFilterAfter(authenticationLoggingFilter, BasicAuthenticationFilter.class)
+                .csrf(
                     AbstractHttpConfigurer::disable
                 ).build();
     }
