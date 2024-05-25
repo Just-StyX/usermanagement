@@ -1,5 +1,6 @@
 package jsl.security.config.userconfig;
 
+import jsl.security.filter.RequestValidationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -7,6 +8,7 @@ import org.springframework.security.config.annotation.web.configurers.AbstractHt
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
 @Configuration
 public class UserManagerConfig {
@@ -16,11 +18,13 @@ public class UserManagerConfig {
     }
 
     @Bean
-    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity) throws Exception {
+    SecurityFilterChain securityFilterChain(HttpSecurity httpSecurity,
+                                            RequestValidationFilter requestValidationFilter) throws Exception {
         return httpSecurity
-                .formLogin(c -> c.defaultSuccessUrl("/person", true))
+//                .formLogin(c -> c.defaultSuccessUrl("/person", true))
+                .addFilterBefore(requestValidationFilter, BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(
-                    c -> c.anyRequest().authenticated()
+                    c -> c.anyRequest().permitAll()
                 ).csrf(
                     AbstractHttpConfigurer::disable
                 ).build();

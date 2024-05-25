@@ -29,8 +29,8 @@ public class PersonController {
     }
 
     @GetMapping
-    public String login() {
-        return "hello welcome!";
+    public ResponseEntity<String> login(@RequestHeader("Request-Id") String requestId) {
+        return ResponseEntity.ok("you're logged in");
     }
 
 }
